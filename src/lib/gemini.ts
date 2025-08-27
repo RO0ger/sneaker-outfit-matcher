@@ -60,3 +60,26 @@ export function cleanAndParseGeminiResponse(text: string): any {
     return { error: "Failed to parse JSON response", details: cleanedText };
   }
 }
+
+export async function generateOutfitSuggestions(sneakerData: any, trendData: any[], wardrobeItems: any[] = []) {
+  const outfitPrompt = `
+    SNEAKER: ${JSON.stringify(sneakerData)}
+    TRENDS: ${JSON.stringify(trendData.slice(0, 3))}
+    WARDROBE: ${JSON.stringify(wardrobeItems)}
+    
+    Generate 3 outfit suggestions. Return ONLY valid JSON:
+    {
+      "outfits": [
+        {
+          "items": ["Black hoodie", "Blue jeans", "White cap"],
+          "reasoning": "Classic streetwear that complements the sneaker colors",
+          "occasion": "casual",
+          "confidence": 0.9
+        }
+      ]
+    }
+  `;
+  
+  const result = await model.generateContent(outfitPrompt);
+  return cleanAndParseGeminiResponse(result.response.text());
+}
