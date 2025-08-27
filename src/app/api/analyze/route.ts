@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import { analyzeSneakerImage } from '@/lib/gemini';
+import { scrapeTrends } from '@/lib/trend-scraper';
 
 export async function POST(request: NextRequest) {
   try {
@@ -21,9 +22,16 @@ export async function POST(request: NextRequest) {
     // Analyze with Gemini
     const sneakerData = await analyzeSneakerImage(imageFile);
 
+    // Scrape trends in parallel (non-blocking)
+    const trendPromise = scrapeTrends(sneakerData.brand, sneakerData.model);
+
+    // Wait for trend scraping to complete
+    const trendData = await trendPromise;
+
     return NextResponse.json({
       sneaker: sneakerData,
       imageUrl,
+      trends: trendData,
       message: 'Analysis complete'
     });
 
