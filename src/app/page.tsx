@@ -3,8 +3,9 @@ import { useState } from 'react';
 import { ImageUpload } from '@/components/ImageUpload';
 import { WardrobeManager } from '@/components/WardrobeManager';
 import { Button } from '@/components/ui/button'; // Assuming this exists from shadcn
+import { OutfitCard } from '@/components/OutfitCard';
 
-// This interface matches the updated API response for Hour 8
+// This interface is updated to include outfit suggestions
 interface AnalysisResult {
   sneaker: {
     brand: string;
@@ -14,6 +15,12 @@ interface AnalysisResult {
     confidence: number;
   };
   imageUrl: string;
+  outfits: Array<{
+    items: string[];
+    reasoning: string;
+    occasion: string;
+    confidence: number;
+  }>;
   trends: Array<{
     imageUrl: string;
     title: string;
@@ -115,6 +122,18 @@ export default function Home() {
                 </div>
               </div>
             </div>
+
+            {/* Outfit Suggestions */}
+            {analysis.outfits && analysis.outfits.length > 0 && (
+              <div className="bg-white rounded-lg shadow p-6">
+                <h2 className="text-2xl font-bold mb-4">Outfit Suggestions</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {analysis.outfits.map((outfit, index) => (
+                    <OutfitCard key={index} outfit={outfit} index={index} />
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Trend Inspiration */}
             {analysis.trends && analysis.trends.length > 0 && (
