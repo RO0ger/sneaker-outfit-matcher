@@ -4,6 +4,16 @@ import { ImageUpload } from '@/components/ImageUpload';
 import { WardrobeManager } from '@/components/WardrobeManager';
 import { Button } from '@/components/ui/button'; // Assuming this exists from shadcn
 import { OutfitCard } from '@/components/OutfitCard';
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer"
 
 // This interface is updated to include outfit suggestions
 interface AnalysisResult {
@@ -20,6 +30,7 @@ interface AnalysisResult {
       name: string;
       owned: boolean;
     }>;
+    occasion: string;
     confidence: number;
   }>;
 }
@@ -28,7 +39,6 @@ export default function Home() {
   const [analysis, setAnalysis] = useState<AnalysisResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [showWardrobe, setShowWardrobe] = useState(false);
 
   const handleAnalyze = async (file: File) => {
     setLoading(true);
@@ -159,20 +169,33 @@ export default function Home() {
         )}
 
         {/* Wardrobe Management Button */}
-        <div className="text-center mt-8">
-          <Button 
-            onClick={() => setShowWardrobe(!showWardrobe)}
-            variant="outline"
-          >
-            {showWardrobe ? 'Hide' : 'Manage'} Wardrobe
-          </Button>
-        </div>
-
-        {showWardrobe && (
-          <div className="mt-6">
-            <WardrobeManager userId="a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11" />
-          </div>
-        )}
+        <Drawer>
+          <DrawerTrigger asChild>
+            <div className="text-center mt-8">
+              <Button variant="outline">
+                Manage Wardrobe
+              </Button>
+            </div>
+          </DrawerTrigger>
+          <DrawerContent>
+            <DrawerHeader>
+              <DrawerTitle>My Wardrobe</DrawerTitle>
+              <DrawerDescription>Manage your clothing items here.</DrawerDescription>
+            </DrawerHeader>
+            <div className="px-4">
+              <WardrobeManager 
+                userId="a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11" 
+                initialLimit={3}
+                isInDrawer={true}
+              />
+            </div>
+            <DrawerFooter>
+              <DrawerClose asChild>
+                <Button variant="outline">Close</Button>
+              </DrawerClose>
+            </DrawerFooter>
+          </DrawerContent>
+        </Drawer>
       </div>
     </div>
   );
