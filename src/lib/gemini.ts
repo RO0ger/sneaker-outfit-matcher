@@ -82,24 +82,28 @@ export async function generateOutfitSuggestions(sneakerData: any, trendData: any
     
     ${hasWardrobe ? 
       `USER'S WARDROBE: ${JSON.stringify(wardrobeItems)}
-       PRIORITY: Use items from user's wardrobe when possible. Mark owned vs buy.` :
-      `NO WARDROBE DATA: Suggest specific items to buy.`
+       PRIORITY: Use items from user's wardrobe when possible. Mark 'owned' as true.` :
+      `NO WARDROBE DATA: Suggest specific items to buy and mark 'owned' as false.`
     }
     
-    Return JSON with owned/buy flags:
+    Return JSON format with this exact structure.
     {
       "outfits": [
         {
           "items": [
-            {"name": "Black Nike hoodie", "owned": true},
-            {"name": "Blue Levi's jeans", "owned": false}
+            {"name": "Black Nike Hoodie", "owned": true},
+            {"name": "Grey shorts", "owned": false}
           ],
-          "reasoning": "Uses your black hoodie, suggests jeans to buy",
-          "occasion": "casual",
-          "confidence": 0.9
+          "confidence": 0.85
         }
       ]
     }
+
+    Important:
+    - Return exactly 3 outfits.
+    - Each outfit has only "items" array and "confidence" number (from 0.0 to 1.0).
+    - Each item has only "name" (string) and "owned" (boolean).
+    - No reasoning, id, occasion, or category fields.
   `;
   
   const result = await model.generateContent(outfitPrompt);

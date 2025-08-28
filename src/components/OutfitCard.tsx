@@ -10,7 +10,6 @@ interface OutfitItem {
 
 interface Outfit {
   items: OutfitItem[];
-  reasoning: string;
   occasion: string;
   confidence: number;
 }
@@ -51,10 +50,6 @@ export function OutfitCard({ outfit, index }: OutfitCardProps) {
               </span>
             ))}
           </div>
-        </div>
-        <div>
-          <h4 className="font-semibold mb-2">Reasoning:</h4>
-          <p className="text-sm text-gray-600">{outfit.reasoning}</p>
         </div>
         <div>
            <h4 className="font-semibold mb-2">AI Confidence:</h4>
