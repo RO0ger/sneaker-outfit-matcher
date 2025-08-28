@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase-server';
 import { analyzeSneakerImage, generateOutfitSuggestions } from '@/lib/gemini';
-import { scrapeTrends } from '@/lib/trend-scraper';
 import { sanitizeFilename } from '@/lib/image-utils';
 
 export async function POST(request: NextRequest) {
@@ -57,17 +56,6 @@ export async function POST(request: NextRequest) {
         };
     }
 
-    // 3. Scrape trends (with timeout, non-blocking for response)
-    const trendPromise = scrapeTrends(sneakerData.brand, sneakerData.model)
-      .then(trends => {
-        // Limit to 5 trends
-        return trends.slice(0, 5);
-      })
-      .catch(err => {
-        console.error("Trend scraping failed:", err);
-        return []; // Return empty array on failure
-      });
-
     // 4. Fetch wardrobe items
     const { data: wardrobeItems } = await supabase
       .from('wardrobe_items')
@@ -77,16 +65,9 @@ export async function POST(request: NextRequest) {
     // 5. Generate outfit suggestions
     const outfitSuggestions = await generateOutfitSuggestions(sneakerData, [], wardrobeItems || []);
 
-    // Wait for trend data if it hasn't finished
-    const trendData = await Promise.race([
-        trendPromise,
-        new Promise<any[]>(resolve => setTimeout(() => resolve([]), 10000)) // 10s timeout for trends
-    ]);
-
     return NextResponse.json({
       sneaker: sneakerData,
       imageUrl,
-      trends: trendData,
       outfits: outfitSuggestions.outfits || [],
       message: 'Analysis complete'
     });

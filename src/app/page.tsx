@@ -24,10 +24,6 @@ interface AnalysisResult {
     occasion: string;
     confidence: number;
   }>;
-  trends: Array<{
-    imageUrl: string;
-    title: string;
-  }>;
 }
 
 export default function Home() {
@@ -125,25 +121,6 @@ export default function Home() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {analysis.outfits.map((outfit, index) => (
                       <OutfitCard key={index} outfit={outfit} index={index} />
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Trend Inspiration */}
-              {analysis.trends && analysis.trends.length > 0 && (
-                <div className="bg-white rounded-lg shadow p-6">
-                  <h2 className="text-2xl font-bold mb-4">Trend Inspiration</h2>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                    {analysis.trends.map((trend, index) => (
-                      <div key={index} className="group relative">
-                        <img 
-                          src={trend.imageUrl} 
-                          alt={trend.title}
-                          className="w-full h-48 object-cover rounded-lg mb-2 group-hover:opacity-75 transition-opacity"
-                        />
-                        <p className="text-sm text-gray-600 truncate">{trend.title}</p>
-                      </div>
                     ))}
                   </div>
                 </div>
