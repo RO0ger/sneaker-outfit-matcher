@@ -10,11 +10,23 @@ const genAI = new GoogleGenerativeAI(apiKey);
 
 export const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-function cleanGeminiResponse(text: string): string {
+export function cleanGeminiResponse(text: string): string {
   return text
     .replace(/```json\n?/g, '')
     .replace(/```\n?/g, '')
+    .replace(/^\s*[\{\[]/, match => match) // Preserve JSON start
+    .replace(/[\}\]]\s*$/, match => match) // Preserve JSON end
     .trim();
+}
+
+export function safeJsonParse(text: string, fallback: any = {}) {
+  try {
+    const cleaned = cleanGeminiResponse(text);
+    return JSON.parse(cleaned);
+  } catch (error) {
+    console.error('JSON parse failed:', error, 'Original text:', text);
+    return fallback;
+  }
 }
 
 export async function analyzeSneakerImage(file: File) {
@@ -37,7 +49,7 @@ export async function analyzeSneakerImage(file: File) {
     { inlineData: { mimeType: file.type, data: base64Image } }
   ]);
   
-  return JSON.parse(cleanGeminiResponse(result.response.text()));
+  return safeJsonParse(result.response.text());
 }
 
 /**
@@ -91,5 +103,5 @@ export async function generateOutfitSuggestions(sneakerData: any, trendData: any
   `;
   
   const result = await model.generateContent(outfitPrompt);
-  return cleanAndParseGeminiResponse(result.response.text());
+  return safeJsonParse(result.response.text());
 }

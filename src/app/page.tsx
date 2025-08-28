@@ -54,7 +54,8 @@ export default function Home() {
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.details || 'Analysis failed');
+        // Use the 'details' from the API response if available, otherwise a generic message
+        throw new Error(result.details || 'An unknown error occurred during analysis.');
       }
       
       setAnalysis(result);
@@ -62,7 +63,7 @@ export default function Home() {
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
       console.error('Analysis failed:', errorMessage);
-      setError(`Failed to analyze image. Please try again. (Error: ${errorMessage})`);
+      setError(`Analysis failed: ${errorMessage} Please try again.`);
     } finally {
       setLoading(false);
     }

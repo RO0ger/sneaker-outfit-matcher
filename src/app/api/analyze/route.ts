@@ -7,54 +7,95 @@ export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
     const imageFile = formData.get('image') as File;
-    const userId = formData.get('userId') as string || 'temp-user';
+    const userId = formData.get('userId') as string || 'temp-user'; // Default for now
     
-    // Upload to Supabase Storage
+    if (!imageFile) {
+      return NextResponse.json({ error: 'No image provided' }, { status: 400 });
+    }
+
+    if (imageFile.size > 10 * 1024 * 1024) { // 10MB limit
+      return NextResponse.json({ error: 'File too large (max 10MB)' }, { status: 400 });
+    }
+
+    // 1. Upload to Supabase Storage (with retry)
     const fileName = `${Date.now()}-${imageFile.name}`;
-    const { data: uploadData, error: uploadError } = await supabase.storage
-      .from('sneaker-images')
-      .upload(fileName, imageFile);
+    let uploadData;
+    let uploadError;
+    for (let i = 0; i < 3; i++) {
+        const { data, error } = await supabase.storage
+            .from('sneaker-images')
+            .upload(fileName, imageFile);
+        if (!error) {
+            uploadData = data;
+            break;
+        }
+        uploadError = error;
+        if (i < 2) await new Promise(res => setTimeout(res, 1000));
+    }
 
-    if (uploadError) throw uploadError;
+    if (!uploadData) {
+        console.error('Supabase upload failed:', uploadError);
+        throw new Error('Failed to upload image to storage.');
+    }
+    
+    const imageUrl = `${process.env.SUPABASE_URL}/storage/v1/object/public/sneaker-images/${uploadData.path}`;
 
-    const imageUrl = `${process.env.SUPABASE_URL}/storage/v1/object/public/sneaker-images/${fileName}`;
+    // 2. Analyze with Gemini (with timeout and fallback)
+    let sneakerData;
+    try {
+        const analysisPromise = analyzeSneakerImage(imageFile);
+        sneakerData = await Promise.race([
+            analysisPromise,
+            new Promise((_, reject) => setTimeout(() => reject(new Error('Analysis timeout')), 15000))
+        ]);
+        if (!sneakerData || !sneakerData.brand) throw new Error('Invalid analysis result');
+    } catch (error) {
+        console.error("Gemini analysis failed or timed out:", error);
+        sneakerData = { // Fallback response
+            brand: 'Unknown', model: 'Sneaker', colors: ['white'], style: 'casual', confidence: 0.5
+        };
+    }
 
-    // Analyze with Gemini
-    const sneakerData = await analyzeSneakerImage(imageFile);
+    // 3. Scrape trends (with timeout, non-blocking for response)
+    const trendPromise = scrapeTrends(sneakerData.brand, sneakerData.model)
+      .then(trends => {
+        // Limit to 5 trends
+        return trends.slice(0, 5);
+      })
+      .catch(err => {
+        console.error("Trend scraping failed:", err);
+        return []; // Return empty array on failure
+      });
 
-    // Fetch wardrobe items
-    const { data: wardrobeItems, error: wardrobeError } = await supabase
+    // 4. Fetch wardrobe items
+    const { data: wardrobeItems } = await supabase
       .from('wardrobe_items')
       .select('*')
       .eq('user_id', userId);
 
-    if (wardrobeError) console.error('Error fetching wardrobe items:', wardrobeError);
-    
-    // Scrape trends in parallel (non-blocking)
-    const trendPromise = scrapeTrends(sneakerData.brand, sneakerData.model);
+    // 5. Generate outfit suggestions
+    const outfitSuggestions = await generateOutfitSuggestions(sneakerData, [], wardrobeItems || []);
 
-    // Generate outfit suggestions in parallel
-    const outfitPromise = generateOutfitSuggestions(sneakerData, [], wardrobeItems || []);
-
-    // Wait for trend scraping and outfit generation to complete
-    const [trendData, outfitSuggestions] = await Promise.all([
-      trendPromise,
-      outfitPromise
+    // Wait for trend data if it hasn't finished
+    const trendData = await Promise.race([
+        trendPromise,
+        new Promise<any[]>(resolve => setTimeout(() => resolve([]), 10000)) // 10s timeout for trends
     ]);
 
     return NextResponse.json({
       sneaker: sneakerData,
       imageUrl,
       trends: trendData,
-      outfits: outfitSuggestions.outfits, // Assuming outfitSuggestions has an 'outfits' key
+      outfits: outfitSuggestions.outfits || [],
       message: 'Analysis complete'
     });
 
   } catch (error) {
+    console.error('[API/ANALYZE] Error:', error);
     const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
     return NextResponse.json({ 
       error: 'Analysis failed',
-      details: errorMessage
+      details: process.env.NODE_ENV === 'development' ? errorMessage : 'Please try again later.'
     }, { status: 500 });
   }
 }
