@@ -6,7 +6,9 @@ export interface TrendItem {
   source: 'pinterest';
 }
 
-export async function scrapeTrends(brand: string, model: string): Promise<TrendItem[]> {
+const trendCache = new Map<string, { data: TrendItem[], timestamp: number }>();
+
+async function performScraping(brand: string, model: string): Promise<TrendItem[]> {
   let browser;
   
   try {
@@ -51,4 +53,33 @@ export async function scrapeTrends(brand: string, model: string): Promise<TrendI
   } finally {
     if (browser) await browser.close();
   }
+}
+
+export async function scrapeTrends(brand: string, model: string): Promise<TrendItem[]> {
+  const cacheKey = `${brand}-${model}`.toLowerCase();
+  const cached = trendCache.get(cacheKey);
+
+  // Return cached if less than 1 hour old
+  if (cached && Date.now() - cached.timestamp < 3600000) {
+    return cached.data;
+  }
+
+  const scrapingPromise = performScraping(brand, model);
+
+  if (cached) {
+    // Return stale cache, update in background
+    scrapingPromise.then(fresh => {
+      if (fresh.length > 0) { // Only update cache if new data was found
+        trendCache.set(cacheKey, { data: fresh, timestamp: Date.now() });
+      }
+    });
+    return cached.data;
+  }
+
+  // No cache, wait for fresh data
+  const fresh = await scrapingPromise;
+  if (fresh.length > 0) {
+    trendCache.set(cacheKey, { data: fresh, timestamp: Date.now() });
+  }
+  return fresh;
 }

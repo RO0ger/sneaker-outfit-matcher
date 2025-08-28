@@ -1,6 +1,7 @@
 'use client';
 import { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
+import { compressImage } from '@/lib/image-utils';
 
 interface ImageUploadProps {
   onAnalyze: (file: File) => Promise<void>;
@@ -26,12 +27,15 @@ export function ImageUpload({ onAnalyze, loading }: ImageUploadProps) {
       return;
     }
 
+    // Compress if large
+    const finalFile = file.size > 2 * 1024 * 1024 ? await compressImage(file) : file;
+    
     // Show preview
-    const previewUrl = URL.createObjectURL(file);
+    const previewUrl = URL.createObjectURL(finalFile);
     setPreview(previewUrl);
 
     // Analyze
-    await onAnalyze(file);
+    await onAnalyze(finalFile);
   };
 
   const triggerFileSelect = () => {
