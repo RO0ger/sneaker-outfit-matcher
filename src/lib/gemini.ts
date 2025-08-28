@@ -107,5 +107,14 @@ export async function generateOutfitSuggestions(sneakerData: any, trendData: any
   `;
   
   const result = await model.generateContent(outfitPrompt);
-  return safeJsonParse(result.response.text());
+  const parsedResult = safeJsonParse(result.response.text());
+
+  if (parsedResult && Array.isArray(parsedResult.outfits)) {
+    return {
+      ...parsedResult,
+      outfits: parsedResult.outfits.slice(0, 3),
+    };
+  }
+  
+  return parsedResult;
 }

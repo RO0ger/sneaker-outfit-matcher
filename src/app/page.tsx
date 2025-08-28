@@ -20,8 +20,6 @@ interface AnalysisResult {
       name: string;
       owned: boolean;
     }>;
-    reasoning: string;
-    occasion: string;
     confidence: number;
   }>;
 }
