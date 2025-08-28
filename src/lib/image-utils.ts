@@ -38,3 +38,4 @@ export async function compressImage(file: File, maxWidth = 1024, quality = 0.8):
     };
   });
 }
+
