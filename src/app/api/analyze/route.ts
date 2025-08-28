@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
-import { analyzeSneakerImage } from '@/lib/gemini';
+import { analyzeSneakerImage, generateOutfitSuggestions } from '@/lib/gemini';
 import { scrapeTrends } from '@/lib/trend-scraper';
 
 export async function POST(request: NextRequest) {
@@ -22,16 +22,31 @@ export async function POST(request: NextRequest) {
     // Analyze with Gemini
     const sneakerData = await analyzeSneakerImage(imageFile);
 
+    // Fetch wardrobe items
+    const { data: wardrobeItems, error: wardrobeError } = await supabase
+      .from('wardrobe_items')
+      .select('*')
+      .eq('user_id', userId);
+
+    if (wardrobeError) console.error('Error fetching wardrobe items:', wardrobeError);
+    
     // Scrape trends in parallel (non-blocking)
     const trendPromise = scrapeTrends(sneakerData.brand, sneakerData.model);
 
-    // Wait for trend scraping to complete
-    const trendData = await trendPromise;
+    // Generate outfit suggestions in parallel
+    const outfitPromise = generateOutfitSuggestions(sneakerData, [], wardrobeItems || []);
+
+    // Wait for trend scraping and outfit generation to complete
+    const [trendData, outfitSuggestions] = await Promise.all([
+      trendPromise,
+      outfitPromise
+    ]);
 
     return NextResponse.json({
       sneaker: sneakerData,
       imageUrl,
       trends: trendData,
+      outfits: outfitSuggestions.outfits, // Assuming outfitSuggestions has an 'outfits' key
       message: 'Analysis complete'
     });
 

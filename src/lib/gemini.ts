@@ -62,17 +62,27 @@ export function cleanAndParseGeminiResponse(text: string): any {
 }
 
 export async function generateOutfitSuggestions(sneakerData: any, trendData: any[], wardrobeItems: any[] = []) {
+  const hasWardrobe = wardrobeItems.length > 0;
+  
   const outfitPrompt = `
     SNEAKER: ${JSON.stringify(sneakerData)}
-    TRENDS: ${JSON.stringify(trendData.slice(0, 3))}
-    WARDROBE: ${JSON.stringify(wardrobeItems)}
+    ${trendData.length > 0 ? `TRENDS: ${JSON.stringify(trendData.slice(0, 3))}` : ''}
     
-    Generate 3 outfit suggestions. Return ONLY valid JSON:
+    ${hasWardrobe ? 
+      `USER'S WARDROBE: ${JSON.stringify(wardrobeItems)}
+       PRIORITY: Use items from user's wardrobe when possible. Mark owned vs buy.` :
+      `NO WARDROBE DATA: Suggest specific items to buy.`
+    }
+    
+    Return JSON with owned/buy flags:
     {
       "outfits": [
         {
-          "items": ["Black hoodie", "Blue jeans", "White cap"],
-          "reasoning": "Classic streetwear that complements the sneaker colors",
+          "items": [
+            {"name": "Black Nike hoodie", "owned": true},
+            {"name": "Blue Levi's jeans", "owned": false}
+          ],
+          "reasoning": "Uses your black hoodie, suggests jeans to buy",
           "occasion": "casual",
           "confidence": 0.9
         }
