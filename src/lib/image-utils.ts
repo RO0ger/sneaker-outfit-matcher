@@ -39,3 +39,12 @@ export async function compressImage(file: File, maxWidth = 1024, quality = 0.8):
   });
 }
 
+
+export function sanitizeFilename(filename: string): string {
+  const timestamp = Date.now();
+  const sanitized = filename.replace(/[^a-zA-Z0-9.]/g, "-").replace(/--+/g, "-");
+  const extension = sanitized.split(".").pop();
+  const name = sanitized.substring(0, sanitized.lastIndexOf("."));
+  return `${name}-${timestamp}.${extension}`;
+}
+

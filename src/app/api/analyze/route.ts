@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase-server';
 import { analyzeSneakerImage, generateOutfitSuggestions } from '@/lib/gemini';
 import { scrapeTrends } from '@/lib/trend-scraper';
+import { sanitizeFilename } from '@/lib/image-utils';
 
 export async function POST(request: NextRequest) {
   try {
@@ -18,7 +19,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 1. Upload to Supabase Storage (with retry)
-    const fileName = `${Date.now()}-${imageFile.name}`;
+    const fileName = sanitizeFilename(imageFile.name);
     let uploadData;
     let uploadError;
     for (let i = 0; i < 3; i++) {
