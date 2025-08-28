@@ -44,7 +44,7 @@ export default function Home() {
     try {
       const formData = new FormData();
       formData.append('image', file);
-      formData.append('userId', 'temp-user-id'); // Using a temporary user ID as per plan
+      formData.append('userId', 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'); // Using a hardcoded test user ID for local testing
       
       const response = await fetch('/api/analyze', {
         method: 'POST',
@@ -195,7 +195,7 @@ export default function Home() {
 
         {showWardrobe && (
           <div className="mt-6">
-            <WardrobeManager userId="temp-user-id" />
+            <WardrobeManager userId="a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11" />
           </div>
         )}
       </div>
