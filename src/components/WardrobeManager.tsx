@@ -12,9 +12,11 @@ interface WardrobeItem {
 
 interface WardrobeManagerProps {
   userId: string;
+  initialLimit?: number;
+  isInDrawer?: boolean;
 }
 
-export function WardrobeManager({ userId }: WardrobeManagerProps) {
+export function WardrobeManager({ userId, initialLimit, isInDrawer }: WardrobeManagerProps) {
   const [items, setItems] = useState<WardrobeItem[]>([]);
   const [newItem, setNewItem] = useState({
     item_type: 'top',
@@ -23,6 +25,7 @@ export function WardrobeManager({ userId }: WardrobeManagerProps) {
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showAllItems, setShowAllItems] = useState(!initialLimit);
 
   const loadWardrobe = async () => {
     try {
@@ -87,8 +90,10 @@ export function WardrobeManager({ userId }: WardrobeManagerProps) {
     }
   };
 
+  const displayedItems = showAllItems || !initialLimit ? items : items.slice(0, initialLimit);
+
   return (
-    <div className="bg-white rounded-lg shadow p-6">
+    <div className={`bg-white rounded-lg shadow p-6 ${isInDrawer ? 'max-h-[80vh] overflow-y-auto' : ''}`}>
       <h2 className="text-2xl font-bold mb-4">My Wardrobe</h2>
       
       <form onSubmit={handleAddItem} className="mb-6 grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
@@ -140,10 +145,10 @@ export function WardrobeManager({ userId }: WardrobeManagerProps) {
         <p>Loading wardrobe...</p>
       ) : (
         <div className="space-y-3">
-          {items.length === 0 ? (
+          {displayedItems.length === 0 ? (
             <p className="text-gray-500">Your wardrobe is empty. Add some items above!</p>
           ) : (
-            items.map((item) => (
+            displayedItems.map((item) => (
               <div key={item.id} className="flex justify-between items-center bg-gray-50 p-3 rounded-md">
                 <div>
                   <p className="font-semibold">{item.description}</p>
@@ -154,6 +159,13 @@ export function WardrobeManager({ userId }: WardrobeManagerProps) {
                 </Button>
               </div>
             ))
+          )}
+          {!showAllItems && initialLimit && items.length > initialLimit && (
+            <div className="text-center mt-4">
+              <Button variant="link" onClick={() => setShowAllItems(true)}>
+                See All
+              </Button>
+            </div>
           )}
         </div>
       )}
