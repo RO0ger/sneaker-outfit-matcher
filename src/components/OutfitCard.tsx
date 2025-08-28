@@ -3,8 +3,13 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
+interface OutfitItem {
+  name: string;
+  owned: boolean;
+}
+
 interface Outfit {
-  items: string[];
+  items: OutfitItem[];
   reasoning: string;
   occasion: string;
   confidence: number;
@@ -31,9 +36,19 @@ export function OutfitCard({ outfit, index }: OutfitCardProps) {
           <h4 className="font-semibold mb-2">Items:</h4>
           <div className="flex flex-wrap gap-2">
             {outfit.items.map((item, itemIndex) => (
-              <Badge key={itemIndex} variant="secondary">
-                {item}
-              </Badge>
+              <span 
+                key={itemIndex} 
+                className={`px-3 py-1 rounded-full text-sm font-medium border ${
+                  item.owned 
+                    ? 'bg-green-50 text-green-700 border-green-200' 
+                    : 'bg-orange-50 text-orange-700 border-orange-200'
+                }`}
+              >
+                {item.name}
+                <span className="ml-1.5 text-xs">
+                  {item.owned ? '✓' : '🛒'}
+                </span>
+              </span>
             ))}
           </div>
         </div>

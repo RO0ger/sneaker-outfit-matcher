@@ -16,7 +16,10 @@ interface AnalysisResult {
   };
   imageUrl: string;
   outfits: Array<{
-    items: string[];
+    items: Array<{
+      name: string;
+      owned: boolean;
+    }>;
     reasoning: string;
     occasion: string;
     confidence: number;
@@ -88,22 +91,76 @@ export default function Home() {
           </div>
         )}
 
-        {analysis && (
+        {loading && (
           <div className="space-y-6">
-            {/* Sneaker Analysis */}
-            <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-2xl font-bold mb-4">
-                Analysis Results
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="md:col-span-1">
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="bg-white rounded-lg shadow p-6 animate-pulse">
+                <div className="h-6 bg-gray-200 rounded w-1/3 mb-4"></div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="md:col-span-1">
+                    <div className="w-full h-40 bg-gray-200 rounded-lg"></div>
+                  </div>
+                  <div className="md:col-span-2 space-y-4">
+                    <div className="h-5 bg-gray-200 rounded w-3/4"></div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="h-4 bg-gray-200 rounded w-full"></div>
+                      <div className="h-4 bg-gray-200 rounded w-full"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {analysis && (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Main content */}
+            <div className="lg:col-span-2 space-y-6">
+              {/* Outfit Suggestions */}
+              {analysis.outfits && analysis.outfits.length > 0 && (
+                <div className="bg-white rounded-lg shadow p-6">
+                  <h2 className="text-2xl font-bold mb-4">Outfit Suggestions</h2>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {analysis.outfits.map((outfit, index) => (
+                      <OutfitCard key={index} outfit={outfit} index={index} />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Trend Inspiration */}
+              {analysis.trends && analysis.trends.length > 0 && (
+                <div className="bg-white rounded-lg shadow p-6">
+                  <h2 className="text-2xl font-bold mb-4">Trend Inspiration</h2>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    {analysis.trends.map((trend, index) => (
+                      <div key={index} className="group relative">
+                        <img 
+                          src={trend.imageUrl} 
+                          alt={trend.title}
+                          className="w-full h-48 object-cover rounded-lg mb-2 group-hover:opacity-75 transition-opacity"
+                        />
+                        <p className="text-sm text-gray-600 truncate">{trend.title}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Sidebar for Sneaker Analysis */}
+            <div className="lg:col-span-1 space-y-6">
+              <div className="bg-white rounded-lg shadow p-6 sticky top-8">
+                <h2 className="text-2xl font-bold mb-4">
+                  Analysis Results
+                </h2>
+                <div className="space-y-4">
                   <img 
                     src={analysis.imageUrl} 
                     alt={`${analysis.sneaker.brand} ${analysis.sneaker.model}`}
                     className="w-full h-auto object-cover rounded-lg"
                   />
-                </div>
-                <div className="md:col-span-2 space-y-4">
                   <h3 className="text-xl font-semibold">{analysis.sneaker.brand} {analysis.sneaker.model}</h3>
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
@@ -122,37 +179,6 @@ export default function Home() {
                 </div>
               </div>
             </div>
-
-            {/* Outfit Suggestions */}
-            {analysis.outfits && analysis.outfits.length > 0 && (
-              <div className="bg-white rounded-lg shadow p-6">
-                <h2 className="text-2xl font-bold mb-4">Outfit Suggestions</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {analysis.outfits.map((outfit, index) => (
-                    <OutfitCard key={index} outfit={outfit} index={index} />
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Trend Inspiration */}
-            {analysis.trends && analysis.trends.length > 0 && (
-              <div className="bg-white rounded-lg shadow p-6">
-                <h2 className="text-2xl font-bold mb-4">Trend Inspiration</h2>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {analysis.trends.map((trend, index) => (
-                    <div key={index} className="group relative">
-                      <img 
-                        src={trend.imageUrl} 
-                        alt={trend.title}
-                        className="w-full h-48 object-cover rounded-lg mb-2 group-hover:opacity-75 transition-opacity"
-                      />
-                      <p className="text-sm text-gray-600 truncate">{trend.title}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
         )}
 
