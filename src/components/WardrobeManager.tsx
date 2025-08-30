@@ -1,7 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
+import { staggerContainer, staggerItem, buttonVariants } from '@/lib/animations';
 
 interface WardrobeItem {
   id: string;
@@ -93,82 +95,218 @@ export function WardrobeManager({ userId, initialLimit, isInDrawer }: WardrobeMa
   const displayedItems = showAllItems || !initialLimit ? items : items.slice(0, initialLimit);
 
   return (
-    <div className={`bg-white rounded-lg shadow p-6 ${isInDrawer ? 'max-h-[80vh] overflow-y-auto' : ''}`}>
-      <h2 className="text-2xl font-bold mb-4">My Wardrobe</h2>
-      
-      <form onSubmit={handleAddItem} className="mb-6 grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-        <div className="md:col-span-2">
-          <label htmlFor="description" className="block text-sm font-medium text-gray-700">Description</label>
-          <input
+    <motion.div
+      className={`bg-white rounded-lg shadow p-6 ${isInDrawer ? 'max-h-[80vh] overflow-y-auto' : ''}`}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+    >
+      <motion.h2
+        className="text-2xl font-bold mb-4"
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.3, delay: 0.1 }}
+      >
+        My Wardrobe
+      </motion.h2>
+
+      <motion.form
+        onSubmit={handleAddItem}
+        className="mb-6 grid grid-cols-1 md:grid-cols-4 gap-4 items-end"
+        variants={staggerContainer}
+        initial="initial"
+        animate="animate"
+      >
+        <motion.div className="md:col-span-2" variants={staggerItem}>
+          <motion.label
+            htmlFor="description"
+            className="block text-sm font-medium text-gray-700"
+            whileHover={{ scale: 1.02 }}
+          >
+            Description
+          </motion.label>
+          <motion.input
             type="text"
             name="description"
             id="description"
             value={newItem.description}
             onChange={handleInputChange}
             placeholder="e.g., Black Nike hoodie"
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm transition-all duration-200"
+            whileFocus={{
+              scale: 1.02,
+              boxShadow: "0 0 0 3px rgba(99, 102, 241, 0.1)"
+            }}
+            transition={{ duration: 0.2 }}
           />
-        </div>
-        <div>
-          <label htmlFor="color" className="block text-sm font-medium text-gray-700">Color</label>
-          <input
+        </motion.div>
+        <motion.div variants={staggerItem}>
+          <motion.label
+            htmlFor="color"
+            className="block text-sm font-medium text-gray-700"
+            whileHover={{ scale: 1.02 }}
+          >
+            Color
+          </motion.label>
+          <motion.input
             type="text"
             name="color"
             id="color"
             value={newItem.color}
             onChange={handleInputChange}
             placeholder="e.g., Black"
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm transition-all duration-200"
+            whileFocus={{
+              scale: 1.02,
+              boxShadow: "0 0 0 3px rgba(99, 102, 241, 0.1)"
+            }}
+            transition={{ duration: 0.2 }}
           />
-        </div>
-        <div>
-          <label htmlFor="item_type" className="block text-sm font-medium text-gray-700">Type</label>
-          <select
+        </motion.div>
+        <motion.div variants={staggerItem}>
+          <motion.label
+            htmlFor="item_type"
+            className="block text-sm font-medium text-gray-700"
+            whileHover={{ scale: 1.02 }}
+          >
+            Type
+          </motion.label>
+          <motion.select
             name="item_type"
             id="item_type"
             value={newItem.item_type}
             onChange={handleInputChange}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm transition-all duration-200"
+            whileFocus={{
+              scale: 1.02,
+              boxShadow: "0 0 0 3px rgba(99, 102, 241, 0.1)"
+            }}
+            transition={{ duration: 0.2 }}
           >
             <option>top</option>
             <option>bottom</option>
             <option>outerwear</option>
             <option>accessory</option>
-          </select>
-        </div>
-        <Button type="submit" className="w-full md:w-auto">Add Item</Button>
-      </form>
+          </motion.select>
+        </motion.div>
+        <motion.div variants={staggerItem}>
+          <motion.div
+            variants={buttonVariants}
+            whileHover="hover"
+            whileTap="tap"
+            initial="initial"
+          >
+            <Button type="submit" className="w-full md:w-auto">Add Item</Button>
+          </motion.div>
+        </motion.div>
+      </motion.form>
 
-      {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+      <AnimatePresence>
+        {error && (
+          <motion.p
+            className="text-red-500 text-sm mb-4"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.3 }}
+          >
+            {error}
+          </motion.p>
+        )}
+      </AnimatePresence>
 
       {loading ? (
-        <p>Loading wardrobe...</p>
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
+        >
+          Loading wardrobe...
+        </motion.p>
       ) : (
-        <div className="space-y-3">
-          {displayedItems.length === 0 ? (
-            <p className="text-gray-500">Your wardrobe is empty. Add some items above!</p>
-          ) : (
-            displayedItems.map((item) => (
-              <div key={item.id} className="flex justify-between items-center bg-gray-50 p-3 rounded-md">
-                <div>
-                  <p className="font-semibold">{item.description}</p>
-                  <p className="text-sm text-gray-600 capitalize">{item.color} - {item.item_type}</p>
-                </div>
-                <Button variant="ghost" size="sm" onClick={() => deleteItem(item.id)}>
-                  Remove
-                </Button>
-              </div>
-            ))
-          )}
+        <motion.div
+          className="space-y-3"
+          variants={staggerContainer}
+          initial="initial"
+          animate="animate"
+        >
+          <AnimatePresence mode="popLayout">
+            {displayedItems.length === 0 ? (
+              <motion.p
+                key="empty"
+                className="text-gray-500"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.3 }}
+              >
+                Your wardrobe is empty. Add some items above!
+              </motion.p>
+            ) : (
+              displayedItems.map((item, index) => (
+                <motion.div
+                  key={item.id}
+                  className="flex justify-between items-center bg-gray-50 p-3 rounded-md"
+                  variants={staggerItem}
+                  layout
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 20, scale: 0.95 }}
+                  transition={{ duration: 0.3, delay: index * 0.05 }}
+                  whileHover={{
+                    scale: 1.02,
+                    backgroundColor: "rgba(0,0,0,0.05)"
+                  }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <motion.div layout>
+                    <motion.p className="font-semibold" layout>{item.description}</motion.p>
+                    <motion.p
+                      className="text-sm text-gray-600 capitalize"
+                      layout
+                    >
+                      {item.color} - {item.item_type}
+                    </motion.p>
+                  </motion.div>
+                  <motion.div
+                    variants={buttonVariants}
+                    whileHover="hover"
+                    whileTap="tap"
+                    initial="initial"
+                  >
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => deleteItem(item.id)}
+                    >
+                      Remove
+                    </Button>
+                  </motion.div>
+                </motion.div>
+              ))
+            )}
+          </AnimatePresence>
           {!showAllItems && initialLimit && items.length > initialLimit && (
-            <div className="text-center mt-4">
-              <Button variant="link" onClick={() => setShowAllItems(true)}>
-                See All
-              </Button>
-            </div>
+            <motion.div
+              className="text-center mt-4"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: 0.2 }}
+            >
+              <motion.div
+                variants={buttonVariants}
+                whileHover="hover"
+                whileTap="tap"
+                initial="initial"
+              >
+                <Button variant="link" onClick={() => setShowAllItems(true)}>
+                  See All
+                </Button>
+              </motion.div>
+            </motion.div>
           )}
-        </div>
+        </motion.div>
       )}
-    </div>
+    </motion.div>
   );
 }
