@@ -2,11 +2,13 @@ import { useState, useRef } from 'react';
 import { Upload, Zap, Camera } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import sneakerHero from '/sneaker-hero.png';
+import sneakerHero from '@/assets/sneaker-hero.png';
+
 interface ImageUploadProps {
   onImageUpload: (file: File) => void;
   onManageWardrobe: () => void;
 }
+
 export const ImageUpload = ({
   onImageUpload,
   onManageWardrobe
