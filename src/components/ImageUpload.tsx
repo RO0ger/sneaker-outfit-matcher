@@ -54,28 +54,28 @@ export function ImageUpload({ onAnalyze, loading }: ImageUploadProps) {
       
       <div 
         onClick={triggerFileSelect}
-        className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer hover:border-gray-400 transition-colors"
+        className="border-2 border-dashed border-gray-300/50 rounded-lg p-8 text-center cursor-pointer hover:border-gray-300/70 transition-colors"
       >
         {preview ? (
           <div className="space-y-4">
             <img src={preview} alt="Preview" className="max-h-64 mx-auto rounded" />
-            <p className="text-sm text-gray-600">Click to select a different image</p>
+            <p className="text-sm text-gray-300">Click to select a different image</p>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-4 text-white">
             <div className="text-4xl">👟</div>
             <div>
               <p className="text-lg font-medium">Upload your sneaker photo</p>
-              <p className="text-sm text-gray-600">Click to select or drag & drop</p>
+              <p className="text-sm text-gray-300">Click to select or drag & drop</p>
             </div>
           </div>
         )}
       </div>
       
       {loading && (
-        <div className="mt-4 text-center">
+        <div className="mt-4 text-center text-white">
           <div className="inline-flex items-center space-x-2">
-            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-400"></div>
             <span>Analyzing your sneakers...</span>
           </div>
         </div>

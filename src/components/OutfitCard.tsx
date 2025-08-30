@@ -21,16 +21,16 @@ interface OutfitCardProps {
 
 export function OutfitCard({ outfit, index }: OutfitCardProps) {
   return (
-    <Card>
-      <CardHeader>
+    <Card className="bg-transparent border-0 shadow-none">
+      <CardHeader className="text-white">
         <div className="flex justify-between items-start">
           <CardTitle>Outfit {index + 1}</CardTitle>
-          <Badge variant="outline" className="capitalize">
+          <Badge variant="outline" className="capitalize border-white/50 text-white">
             {outfit.occasion}
           </Badge>
         </div>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-4 text-white">
         <div>
           <h4 className="font-semibold mb-2">Items:</h4>
           <div className="flex flex-wrap gap-2">
@@ -39,8 +39,8 @@ export function OutfitCard({ outfit, index }: OutfitCardProps) {
                 key={itemIndex} 
                 className={`px-3 py-1 rounded-full text-sm font-medium border ${
                   item.owned 
-                    ? 'bg-green-50 text-green-700 border-green-200' 
-                    : 'bg-orange-50 text-orange-700 border-orange-200'
+                    ? 'bg-green-500/20 text-green-200 border-green-400/50' 
+                    : 'bg-orange-500/20 text-orange-200 border-orange-400/50'
                 }`}
               >
                 {item.name}
@@ -53,13 +53,13 @@ export function OutfitCard({ outfit, index }: OutfitCardProps) {
         </div>
         <div>
            <h4 className="font-semibold mb-2">AI Confidence:</h4>
-           <div className="w-full bg-gray-200 rounded-full h-2.5">
+           <div className="w-full bg-gray-200/30 rounded-full h-2.5">
              <div 
-               className="bg-blue-600 h-2.5 rounded-full" 
+               className="bg-blue-400 h-2.5 rounded-full" 
                style={{ width: `${Math.round(outfit.confidence * 100)}%` }}
              ></div>
            </div>
-           <p className="text-sm text-right mt-1">{Math.round(outfit.confidence * 100)}%</p>
+           <p className="text-sm text-right mt-1 text-gray-300">{Math.round(outfit.confidence * 100)}%</p>
         </div>
       </CardContent>
     </Card>

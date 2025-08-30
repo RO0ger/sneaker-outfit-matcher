@@ -74,23 +74,23 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       <div className="max-w-4xl mx-auto py-8 px-4">
         <header className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">
+          <h1 className="text-4xl font-bold text-white mb-2">
             Sneaker Outfit Matcher
           </h1>
-          <p className="text-gray-600">
+          <p className="text-gray-300">
             Upload your sneakers, get personalized outfit suggestions
           </p>
         </header>
 
-        <div className="bg-white rounded-lg shadow p-6 mb-6">
+        <div className="bg-white/10 backdrop-blur-lg rounded-lg shadow-xl p-6 mb-6 border border-white/20">
           <ImageUpload onAnalyze={handleAnalyze} loading={loading} />
         </div>
 
         {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative mb-6" role="alert">
+          <div className="bg-red-500/30 backdrop-blur-lg border border-red-400 text-white px-4 py-3 rounded-lg relative mb-6" role="alert">
             <strong className="font-bold">Error: </strong>
             <span className="block sm:inline">{error}</span>
           </div>
@@ -99,17 +99,17 @@ export default function Home() {
         {loading && (
           <div className="space-y-6">
             {[...Array(3)].map((_, i) => (
-              <div key={i} className="bg-white rounded-lg shadow p-6 animate-pulse">
-                <div className="h-6 bg-gray-200 rounded w-1/3 mb-4"></div>
+              <div key={i} className="bg-white/10 backdrop-blur-lg rounded-lg shadow-xl p-6 animate-pulse border border-white/20">
+                <div className="h-6 bg-gray-400/30 rounded w-1/3 mb-4"></div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="md:col-span-1">
-                    <div className="w-full h-40 bg-gray-200 rounded-lg"></div>
+                    <div className="w-full h-40 bg-gray-400/30 rounded-lg"></div>
                   </div>
                   <div className="md:col-span-2 space-y-4">
-                    <div className="h-5 bg-gray-200 rounded w-3/4"></div>
+                    <div className="h-5 bg-gray-400/30 rounded w-3/4"></div>
                     <div className="grid grid-cols-2 gap-4">
-                      <div className="h-4 bg-gray-200 rounded w-full"></div>
-                      <div className="h-4 bg-gray-200 rounded w-full"></div>
+                      <div className="h-4 bg-gray-400/30 rounded w-full"></div>
+                      <div className="h-4 bg-gray-400/30 rounded w-full"></div>
                     </div>
                   </div>
                 </div>
@@ -124,8 +124,8 @@ export default function Home() {
             <div className="lg:col-span-2 space-y-6">
               {/* Outfit Suggestions */}
               {analysis.outfits && analysis.outfits.length > 0 && (
-                <div className="bg-white rounded-lg shadow p-6">
-                  <h2 className="text-2xl font-bold mb-4">Outfit Suggestions</h2>
+                <div className="bg-white/10 backdrop-blur-lg rounded-lg shadow-xl p-6 border border-white/20">
+                  <h2 className="text-2xl font-bold mb-4 text-white">Outfit Suggestions</h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {analysis.outfits.map((outfit, index) => (
                       <OutfitCard key={index} outfit={outfit} index={index} />
@@ -137,11 +137,11 @@ export default function Home() {
 
             {/* Sidebar for Sneaker Analysis */}
             <div className="lg:col-span-1 space-y-6">
-              <div className="bg-white rounded-lg shadow p-6 sticky top-8">
-                <h2 className="text-2xl font-bold mb-4">
+              <div className="bg-white/10 backdrop-blur-lg rounded-lg shadow-xl p-6 sticky top-8 border border-white/20">
+                <h2 className="text-2xl font-bold mb-4 text-white">
                   Analysis Results
                 </h2>
-                <div className="space-y-4">
+                <div className="space-y-4 text-white">
                   <img 
                     src={analysis.imageUrl} 
                     alt={`${analysis.sneaker.brand} ${analysis.sneaker.model}`}
@@ -150,15 +150,15 @@ export default function Home() {
                   <h3 className="text-xl font-semibold">{analysis.sneaker.brand} {analysis.sneaker.model}</h3>
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
-                      <span className="font-medium text-gray-500 block">Colors</span>
+                      <span className="font-medium text-gray-300 block">Colors</span>
                       <p>{analysis.sneaker.colors.join(', ')}</p>
                     </div>
                     <div>
-                      <span className="font-medium text-gray-500 block">Style</span>
+                      <span className="font-medium text-gray-300 block">Style</span>
                       <p className="capitalize">{analysis.sneaker.style}</p>
                     </div>
                     <div>
-                      <span className="font-medium text-gray-500 block">Confidence</span>
+                      <span className="font-medium text-gray-300 block">Confidence</span>
                       <p>{Math.round(analysis.sneaker.confidence * 100)}%</p>
                     </div>
                   </div>
