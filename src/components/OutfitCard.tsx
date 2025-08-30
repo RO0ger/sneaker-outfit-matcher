@@ -1,67 +1,71 @@
-'use client';
-
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { CheckCircle, Sparkles } from 'lucide-react';
+import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
 
 interface OutfitItem {
   name: string;
-  owned: boolean;
+  color: string;
+  type: string;
 }
 
-interface Outfit {
+export interface OutfitSuggestion {
+  id: string;
   items: OutfitItem[];
-  occasion: string;
   confidence: number;
 }
 
 interface OutfitCardProps {
-  outfit: Outfit;
+  outfit: OutfitSuggestion;
   index: number;
 }
 
-export function OutfitCard({ outfit, index }: OutfitCardProps) {
+export const OutfitCard = ({
+  outfit,
+  index
+}: OutfitCardProps) => {
+  const getConfidenceColor = (confidence: number) => {
+    if (confidence >= 90) return 'text-success';
+    if (confidence >= 75) return 'text-primary';
+    return 'text-accent';
+  };
+
+  const getConfidenceGlow = (confidence: number) => {
+    if (confidence >= 90) return 'glow-secondary';
+    if (confidence >= 75) return 'glow-primary';
+    return 'glow-accent';
+  };
+
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex justify-between items-start">
-          <CardTitle>Outfit {index + 1}</CardTitle>
-          <Badge variant="outline" className="capitalize">
-            {outfit.occasion}
-          </Badge>
+    <Card key={outfit.id} className="glass-card glass-card-hover p-6 rounded-2xl transition-all duration-300" style={{
+      animationDelay: `${index * 150}ms`
+    }}>
+      <div className="space-y-4">
+        <div className="flex justify-between items-center">
+          <h3 className="text-lg font-semibold">Outfit {index + 1}</h3>
+          <Sparkles className="w-5 h-5 text-accent" />
         </div>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div>
-          <h4 className="font-semibold mb-2">Items:</h4>
-          <div className="flex flex-wrap gap-2">
-            {outfit.items.map((item, itemIndex) => (
-              <span 
-                key={itemIndex} 
-                className={`px-3 py-1 rounded-full text-sm font-medium border ${
-                  item.owned 
-                    ? 'bg-green-50 text-green-700 border-green-200' 
-                    : 'bg-orange-50 text-orange-700 border-orange-200'
-                }`}
-              >
-                {item.name}
-                <span className="ml-1.5 text-xs">
-                  {item.owned ? '✓' : '🛒'}
-                </span>
-              </span>
-            ))}
+
+        <div className="space-y-3">
+          <p className="text-sm font-medium text-muted-foreground">Items:</p>
+          {outfit.items.map((item, itemIndex) => (
+            <div key={itemIndex} className="flex items-center space-x-3 p-3 glass-card rounded-lg">
+              <CheckCircle className="w-4 h-4 text-success" />
+              <span className="capitalize font-medium">{item.name}</span>
+            </div>
+          ))}
+        </div>
+
+        <div className="space-y-3">
+          <div className="flex justify-between items-center">
+            <span className="text-sm font-medium">AI Confidence:</span>
+            <span className={`font-bold ${getConfidenceColor(outfit.confidence)}`}>
+              {outfit.confidence}%
+            </span>
           </div>
+          <Progress value={outfit.confidence} className={`h-3 ${getConfidenceGlow(outfit.confidence)}`} />
         </div>
-        <div>
-           <h4 className="font-semibold mb-2">AI Confidence:</h4>
-           <div className="w-full bg-gray-200 rounded-full h-2.5">
-             <div 
-               className="bg-blue-600 h-2.5 rounded-full" 
-               style={{ width: `${Math.round(outfit.confidence * 100)}%` }}
-             ></div>
-           </div>
-           <p className="text-sm text-right mt-1">{Math.round(outfit.confidence * 100)}%</p>
-        </div>
-      </CardContent>
+      </div>
     </Card>
   );
-}
+};
