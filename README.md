@@ -190,4 +190,4 @@ This project is licensed under the MIT License. See the `LICENSE` file for more 
 
 ---
 
-Made with ❤️ by [Nasif]
+Made with ❤️ by Nasif
