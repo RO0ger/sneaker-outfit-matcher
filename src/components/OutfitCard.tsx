@@ -1,4 +1,5 @@
 import { CheckCircle, Sparkles, Eye, RotateCcw } from 'lucide-react';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -60,7 +61,7 @@ export const OutfitCard = ({
       <Card className="glass-card p-8 rounded-2xl animate-slide-up">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
           <div className="relative">
-            <img src={sneakerImage} alt="Analyzed sneaker" className="w-full max-w-md mx-auto rounded-xl shadow-2xl" />
+            <Image src={sneakerImage} alt="Analyzed sneaker" width={512} height={512} className="w-full max-w-md mx-auto rounded-xl shadow-2xl" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-xl"></div>
             <div className="absolute bottom-4 left-4 right-4">
               <p className="text-sm text-white/80">Click to select a different image</p>

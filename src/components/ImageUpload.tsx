@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react';
+import Image from 'next/image';
 import { Upload, Zap, Camera } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -57,7 +58,7 @@ export const ImageUpload = ({
       <div className="text-center space-y-6 mb-12">
         <div className="flex justify-center mb-6">
           <div className="relative">
-            <img src={sneakerHero} alt="Sneaker" className="w-20 h-20 animate-float" />
+            <Image src={sneakerHero} alt="Sneaker" className="w-20 h-20 animate-float" />
             <div className="absolute inset-0 bg-primary/20 rounded-full blur-xl animate-glow-pulse"></div>
           </div>
         </div>
@@ -76,7 +77,7 @@ export const ImageUpload = ({
           
           {previewImage ? <div className="space-y-4">
               <div className="relative inline-block">
-                <img src={previewImage} alt="Uploaded sneaker" className="max-w-xs max-h-48 rounded-lg shadow-lg" />
+                <Image src={previewImage} alt="Uploaded sneaker" width={320} height={192} className="max-w-xs max-h-48 rounded-lg shadow-lg" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-lg"></div>
               </div>
               <p className="text-muted-foreground">Click to select a different image</p>
